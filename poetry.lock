@@ -31,7 +31,7 @@ setuptools = "*"
 type = "git"
 url = "https://github.com/pyostr-traiding/klines.git"
 reference = "HEAD"
-resolved_reference = "c9ad01bdddc6bccb4dbd17ce7e5d9a24dc0a5080"
+resolved_reference = "70ab49e6a8144e414c4659264422260cf22c5ffb"
 
 [[package]]
 name = "numpy"
