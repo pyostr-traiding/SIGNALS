@@ -1,0 +1,23 @@
+version: '3.8'
+
+
+services:
+
+  signals-btc:
+    build: ./
+    command: poetry run python main.py
+    env_file: ./.env
+
+    environment:
+      SYMBOL: BTCUSDT
+      EXCHANGE: bybit
+      REDIS_HOST: redis
+
+    restart: always
+    networks:
+      - GLOBAL_NETWORK
+
+
+networks:
+  GLOBAL_NETWORK:
+    external: true
