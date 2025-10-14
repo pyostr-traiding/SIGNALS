@@ -10,6 +10,7 @@ python = "^3.14"
 klines = {git = "https://github.com/pyostr-traiding/klines.git"}
 redis = "^6.4.0"
 python-dotenv = "^1.1.1"
+cachetools = "^6.2.1"
 
 
 [build-system]

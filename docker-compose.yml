@@ -7,12 +7,10 @@ services:
     build: ./
     command: poetry run python main.py
     env_file: ./.env
-
     environment:
       SYMBOL: BTCUSDT
       EXCHANGE: bybit
       REDIS_HOST: redis
-
     restart: always
     networks:
       - GLOBAL_NETWORK

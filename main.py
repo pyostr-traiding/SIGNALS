@@ -8,19 +8,12 @@ from dotenv import load_dotenv
 from klines.kline import Klines
 from klines.schema.kline import KlineSchema, CandleSchema
 
+from conf.redis_conf import server_redis
 from conf.settings import settings
 
-from app.callback import kline_callback
+from app.RSI.callback import kline_callback
 
 load_dotenv()
-
-server_redis = redis.Redis(
-    host=os.getenv('REDIS_HOST'),
-    port=int(os.getenv('REDIS_PORT')),
-    password=os.getenv('REDIS_PASSWORD'),
-    db=0,
-    decode_responses=True
-)
 
 klines_1 = Klines(
     symbol=settings.SYMBOL,

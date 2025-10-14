@@ -12,6 +12,17 @@ files = [
 ]
 
 [[package]]
+name = "cachetools"
+version = "6.2.1"
+description = "Extensible memoizing collections and decorators"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "cachetools-6.2.1-py3-none-any.whl", hash = "sha256:09868944b6dde876dfd44e1d47e18484541eaf12f26f29b7af91b26cc892d701"},
+    {file = "cachetools-6.2.1.tar.gz", hash = "sha256:3f391e4bd8f8bf0931169baf7456cc822705f4e2a31f840d218f445b9a854201"},
+]
+
+[[package]]
 name = "klines"
 version = "0.1.0"
 description = "Klines module for trading"
@@ -482,4 +493,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.14"
-content-hash = "e46b30ef72172cab28ff35455624eeffd575542f4ae61871c8fb7ca0dcba7177"
+content-hash = "a08b8c0f34cde7b3c648851dbed2eb9a2e5fdb8758ee952c1fb47c0809480906"
