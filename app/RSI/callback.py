@@ -76,6 +76,7 @@ def get_and_load_Stoch_RSI_markers():
                 STOCH_RSI_PREDICT.pop(int(key), None)
     return markers
 
+
 def kline_callback(klines, kline: KlineSchema):
     klines.update(kline)
     rsi_markers = get_and_load_RSI_markers()
