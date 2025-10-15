@@ -67,6 +67,7 @@ if __name__ == "__main__":
         if msg and not isinstance(msg["data"], int):
             data = json.loads(msg['data'])['data']
             kline = KlineSchema(
+                ts=data['data']['ts'],
                 topic='1',
                 symbol=data['symbol'],
                 interval=data['interval'],
