@@ -3,7 +3,7 @@ version: '3.8'
 
 services:
 
-  signals-btc:
+  btc:
     build: ./
     command: poetry run python main.py
     env_file: ./.env
