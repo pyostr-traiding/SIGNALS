@@ -1,102 +1,71 @@
 import json
 import os
 
-import redis
-
 from dotenv import load_dotenv
-
 from klines.kline import Klines
 from klines.schema.kline import KlineSchema, CandleSchema
-
 from conf.redis_conf import server_redis
 from conf.settings import settings
-
 from app.RSI.callback import kline_callback
 
 load_dotenv()
 
-klines_1 = Klines(
-    symbol=settings.SYMBOL,
-    interval=1,
-    exchange=settings.EXCHANGE,
-    redis_candles=server_redis
-)
+# Инициализация Klines для всех интервалов
+intervals = [1, 5, 15, 30, 60, 120]
+klines_map: dict[int, Klines] = {}
 
-klines_5 = Klines(
-    symbol=settings.SYMBOL,
-    interval=5,
-    exchange=settings.EXCHANGE,
-    redis_candles=server_redis
-)
+for interval in intervals:
+    klines_map[interval] = Klines(
+        symbol=settings.SYMBOL,
+        interval=interval,
+        exchange=settings.EXCHANGE,
+        redis_candles=server_redis,
+    )
 
-klines_15 = Klines(
-    symbol=settings.SYMBOL,
-    interval=15,
-    exchange=settings.EXCHANGE,
-    redis_candles=server_redis
-)
+def handle_message(message: dict):
+    """Обрабатывает входящее сообщение Redis Pub/Sub."""
+    if message["type"] != "message":
+        return  # пропускаем служебные сообщения
+    try:
+        payload = json.loads(message["data"])
+        data = payload["data"]
+        kline = KlineSchema(
+            ts=data["data"]["ts"],
+            topic="1",
+            symbol=data["symbol"],
+            interval=data["interval"],
+            data=[
+                CandleSchema(
+                    dt=data["data"]["dt"],
+                    start=data["data"]["ts"],
+                    interval=data["interval"],
+                    open=data["data"]["o"],
+                    close=data["data"]["c"],
+                    high=data["data"]["h"],
+                    low=data["data"]["l"],
+                    volume=data["data"]["v"],
+                    turnover=data["data"]["t"],
+                )
+            ],
+        )
 
-klines_30 = Klines(
-    symbol=settings.SYMBOL,
-    interval=30,
-    exchange=settings.EXCHANGE,
-    redis_candles=server_redis
-)
-
-klines_60 = Klines(
-    symbol=settings.SYMBOL,
-    interval=60,
-    exchange=settings.EXCHANGE,
-    redis_candles=server_redis
-)
-
-klines_120 = Klines(
-    symbol=settings.SYMBOL,
-    interval=120,
-    exchange=settings.EXCHANGE,
-    redis_candles=server_redis
-)
-
+        interval = kline.data[0].interval
+        klines_obj = klines_map.get(interval)
+        if klines_obj:
+            kline_callback(klines=klines_obj, kline=kline)
+    except Exception as e:
+        print(f"[!] Ошибка обработки сообщения: {e}")
 
 if __name__ == "__main__":
-
+    print(f"Запуск RSI для {settings.SYMBOL}")
     pubsub = server_redis.pubsub()
-    pubsub.subscribe(f'kline:{settings.SYMBOL}')
-    while True:
-        msg = pubsub.get_message()
-        if msg and not isinstance(msg["data"], int):
-            data = json.loads(msg['data'])['data']
-            kline = KlineSchema(
-                ts=data['data']['ts'],
-                topic='1',
-                symbol=data['symbol'],
-                interval=data['interval'],
-                data=[CandleSchema(
-                    dt=data['data']['dt'],
-                    start=data['data']['ts'],
-                    interval=data['interval'],
-                    open=data['data']['o'],
-                    close=data['data']['c'],
-                    high=data['data']['h'],
-                    low=data['data']['l'],
-                    volume=data['data']['v'],
-                    turnover=data['data']['t'],
-                )]
-            )
-            if kline.data[0].interval == 1:
-                kline_callback(klines=klines_1, kline=kline)
+    pubsub.subscribe(f"kline:{settings.SYMBOL}")
 
-            if kline.data[0].interval == 5:
-                kline_callback(klines=klines_5, kline=kline)
-
-            if kline.data[0].interval == 15:
-                kline_callback(klines=klines_15, kline=kline)
-
-            if kline.data[0].interval == 30:
-                kline_callback(klines=klines_30, kline=kline)
-
-            if kline.data[0].interval == 60:
-                kline_callback(klines=klines_60, kline=kline)
-
-            if kline.data[0].interval == 120:
-                kline_callback(klines=klines_120, kline=kline)
+    try:
+        # Главный блокирующий цикл — без нагрузки на CPU
+        for message in pubsub.listen():
+            handle_message(message)
+    except KeyboardInterrupt:
+        print("Остановка по Ctrl+C")
+    except Exception as e:
+        print(f"[!] Ошибка в основном цикле: {e}")
