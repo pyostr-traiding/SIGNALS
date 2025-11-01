@@ -60,6 +60,7 @@ def handle_message(message: dict):
     except Exception as e:
         print(f"[!] Ошибка обработки сообщения: {e}")
 
+
 if __name__ == "__main__":
     print(f"Запуск RSI для {settings.SYMBOL}")
     pubsub = server_redis.pubsub()

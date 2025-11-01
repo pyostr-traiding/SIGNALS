@@ -8,7 +8,6 @@ from conf.settings import settings
 
 
 def macd_callback(klines: Klines, kline: KlineSchema):
-    print('------------------')
     current_value = klines.current_MACD()
     predict = klines.predict_MACD()
     rev = klines.predict_MACD_reversal()
@@ -22,7 +21,7 @@ def macd_callback(klines: Klines, kline: KlineSchema):
     data = {
         "kline_ms": kline.ts,
         "symbol": kline.symbol,
-        "type": "PREDICT.RSI",
+        "type": "MACD",
         "ex": settings.EXCHANGE,
         "data": {
             'current_value': current_value.model_dump_json(),
