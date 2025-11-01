@@ -4,9 +4,11 @@ import os
 from dotenv import load_dotenv
 from klines.kline import Klines
 from klines.schema.kline import KlineSchema, CandleSchema
+
+from app.MACD.callback import macd_callback
 from conf.redis_conf import server_redis
 from conf.settings import settings
-from app.RSI.callback import kline_callback
+from app.RSI.callback import rsi_callback
 
 load_dotenv()
 
@@ -52,7 +54,9 @@ def handle_message(message: dict):
         interval = kline.data[0].interval
         klines_obj = klines_map.get(interval)
         if klines_obj:
-            kline_callback(klines=klines_obj, kline=kline)
+            klines_obj.update(kline)
+            rsi_callback(klines=klines_obj, kline=kline)
+            macd_callback(klines=klines_obj, kline=kline)
     except Exception as e:
         print(f"[!] Ошибка обработки сообщения: {e}")
 

@@ -1,18 +1,19 @@
-[tool.poetry]
+[project]
 name = "signals"
 version = "0.1.0"
 description = ""
-authors = ["Professional <pyostr@gmail.com>"]
+authors = [
+    {name = "www",email = "pyostr@gmail.com"}
+]
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.14"
-klines = {git = "https://github.com/pyostr-traiding/klines.git"}
-redis = "^6.4.0"
-python-dotenv = "^1.1.1"
-cachetools = "^6.2.1"
+requires-python = ">=3.12"
+dependencies = [
+    "python-dotenv (>=1.2.1,<2.0.0)",
+    "redis (>=7.0.1,<8.0.0)",
+    "klines @ git+https://github.com/pyostr-traiding/klines.git",
+]
 
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
