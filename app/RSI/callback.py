@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from pprint import pprint
 
 from cachetools import TTLCache, cached
 from klines.schema.kline import KlineSchema
@@ -32,6 +33,7 @@ def get_and_load_RSI_markers():
         is_active=True,
         actives={"1": True, "5": True, "15": False, "30": False, "60": False}
     )
+    pprint(markers.model_dump())
     for key, value in markers.actives.items():
         if value:
             if not RSI_VALUES.get(int(key), None):
