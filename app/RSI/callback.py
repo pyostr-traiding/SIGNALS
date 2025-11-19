@@ -1,6 +1,5 @@
 import json
 from datetime import datetime
-from pprint import pprint
 
 from cachetools import TTLCache, cached
 from klines.schema.kline import KlineSchema
@@ -8,7 +7,7 @@ from klines.schema.kline import KlineSchema
 from app.RSI.checker import check_all
 from app.RSI.schema import RSIMarkersSchema, ValuesSchema
 from app.RSI.storage import RSI_VALUES, RSI_PREDICT, STOCH_RSI_VALUES, STOCH_RSI_PREDICT
-from conf.redis_conf import server_redis
+from conf.redis_conf import server_redis, server_settings
 from conf.settings import settings
 from app.RSI.rsi import get_signal as rsi_signal, update_prediction as rsi_predict
 from app.RSI.stoch_rsi import get_signal as stoch_signal, update_prediction as stoch_predict
@@ -18,22 +17,10 @@ stoch_rsi_cache = TTLCache(maxsize=100, ttl=5)
 
 @cached(cache=rsi_cache)
 def get_and_load_RSI_markers():
-    markers = RSIMarkersSchema(
-        buy=ValuesSchema(
-            values=["0-45", "0-30", "0-25", ],
-            caption='',
-            predict=[0.2, 0.2, 0.2, ],
-        ),
-        sell=ValuesSchema(
-            values=["70-100", "60-100", "50-100", ],
-            caption='',
-            predict=[0.2, 0.2, 0.2, ],
-        ),
-        intervals=[1, 5, 30, ],
-        is_active=True,
-        actives={"1": True, "5": True, "15": False, "30": False, "60": False}
-    )
-    pprint(markers.model_dump())
+    data = server_settings.get('settings:indicator:RSI')
+    data = json.loads(data)
+    data['actives'] = {i: True for i in data['intervals']}
+    markers = RSIMarkersSchema(**data)
     for key, value in markers.actives.items():
         if value:
             if not RSI_VALUES.get(int(key), None):
@@ -50,21 +37,10 @@ def get_and_load_RSI_markers():
 
 @cached(cache=stoch_rsi_cache)
 def get_and_load_Stoch_RSI_markers():
-    markers = RSIMarkersSchema(
-        buy=ValuesSchema(
-            values=["0-45", "0-30", "0-25", ],
-            caption='',
-            predict=[0.2, 0.2, 0.2, ],
-        ),
-        sell=ValuesSchema(
-            values=["70-100", "60-100", "50-100", ],
-            caption='',
-            predict=[0.2, 0.2, 0.2, ],
-        ),
-        intervals=[1, 5, 30, ],
-        is_active=True,
-        actives={"1": True, "5": True, "15": False, "30": False, "60": False}
-    )
+    data = server_settings.get('settings:indicator:STOCH_RSI')
+    data = json.loads(data)
+    data['actives'] = {i: True for i in data['intervals']}
+    markers = RSIMarkersSchema(**data)
     for key, value in markers.actives.items():
         if value:
             if not STOCH_RSI_VALUES.get(int(key), None):

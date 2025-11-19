@@ -8,7 +8,6 @@ class ValuesSchema(BaseModel):
     Схема значений
     """
     values: list
-    caption: str
     predict: List[float]
 
 
