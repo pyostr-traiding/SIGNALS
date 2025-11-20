@@ -59,6 +59,17 @@ def rsi_callback(klines, kline: KlineSchema):
     rsi_markers = get_and_load_RSI_markers()
     stoch_rsi_markers = get_and_load_Stoch_RSI_markers()
 
+    data = {
+
+        "kline_ms": kline.ts,
+        "symbol": kline.symbol,
+        "type": "INFO",
+        "ex": settings.EXCHANGE,
+        "RSI": rsi_markers.model_dump(),
+        "StochRSI": stoch_rsi_markers.model_dump(),
+    }
+    massage = json.dumps(data).encode('utf-8')
+    server_redis.publish(channel=f'signals:{settings.SYMBOL}:INFO', message=massage)
     if not rsi_markers:
         if settings.PRINT_DEBUG:
             print(f'[{datetime.now()}] Маркеры не получены\n {rsi_markers}')
