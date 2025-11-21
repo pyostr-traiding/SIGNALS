@@ -29,8 +29,6 @@ def macd_callback(klines: Klines, kline: KlineSchema):
             'predict': [i.model_dump_json() for i in predict],
             'rev': rev
         }
-
     }
-    pprint(data)
     massage = json.dumps(data).encode('utf-8')
     server_redis.publish(channel=f'signals:MACD:{settings.SYMBOL}', message=massage)
