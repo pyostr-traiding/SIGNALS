@@ -54,9 +54,12 @@ def handle_message(message: dict):
         interval = kline.data[0].interval
         klines_obj = klines_map.get(interval)
         if klines_obj:
+            print(datetime.now())
             klines_obj.update(kline)
             rsi_callback(klines=klines_obj, kline=kline)
             macd_callback(klines=klines_obj, kline=kline)
+            print(datetime.now())
+            print('---')
     except Exception as e:
         print(f"[!] Ошибка обработки сообщения: {e}")
 
