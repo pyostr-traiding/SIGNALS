@@ -1,4 +1,5 @@
 import json
+from pprint import pprint
 
 from klines.kline import Klines
 from klines.schema.kline import KlineSchema
@@ -30,5 +31,6 @@ def macd_callback(klines: Klines, kline: KlineSchema):
         }
 
     }
+    pprint(data)
     massage = json.dumps(data).encode('utf-8')
     server_redis.publish(channel=f'signals:MACD:{settings.SYMBOL}', message=massage)
