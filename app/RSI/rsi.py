@@ -27,15 +27,18 @@ def get_signal(markers, interval: int, rsi) -> str | None:
 def update_prediction(klines, kline, rsi, markers, max_iter: int = 40) -> None:
     """
     Предсказывает цену, при которой RSI попадёт в заданный диапазон.
-    Внутри klines.predict_rsi используется бинарный поиск (без 2000 итераций).
+    Использует markers.predict[index] как target для бинарного поиска.
     """
     index = markers.intervals.index(kline.interval)
     value = rsi.value
 
+    # Определяем сторону и target для бинарного поиска
     if value < 40:
-        side, target = "buy", markers.buy.values[index]
+        side = "buy"
+        target = markers.buy.predict[index]  # float
     elif value > 60:
-        side, target = "sell", markers.sell.values[index]
+        side = "sell"
+        target = markers.sell.predict[index]
     else:
         RSI_PREDICT[kline.interval] = None
         return
@@ -43,6 +46,7 @@ def update_prediction(klines, kline, rsi, markers, max_iter: int = 40) -> None:
     prediction = klines.predict_rsi(
         side=side,
         rsi=value,
-        target_range=target,
+        target_range=target,  # float, без split
+        max_iter=max_iter,
     )
     RSI_PREDICT[kline.interval] = prediction or None
