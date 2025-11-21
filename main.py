@@ -59,7 +59,7 @@ def handle_message(message: dict):
             rsi_callback(klines=klines_obj, kline=kline)
             macd_callback(klines=klines_obj, kline=kline)
             print(datetime.now())
-            print('---')
+            print('----')
     except Exception as e:
         print(f"[!] Ошибка обработки сообщения: {e}")
 
