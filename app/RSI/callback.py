@@ -118,10 +118,10 @@ def rsi_callback(klines, kline: KlineSchema) -> None:
     )
 
     # print("------------------")
-    # print("RSI:", RSI_VALUES)
-    # print("RSI_PREDICT:", RSI_PREDICT)
-    # print("STOCH:", STOCH_RSI_VALUES)
-    # print("STOCH_PREDICT:", STOCH_RSI_PREDICT)
+    print("RSI:", RSI_VALUES)
+    print("RSI_PREDICT:", RSI_PREDICT)
+    print("STOCH:", STOCH_RSI_VALUES)
+    print("STOCH_PREDICT:", STOCH_RSI_PREDICT)
 
     # --- Отправка предсказаний RSI ---
     rsi_predict_values = [

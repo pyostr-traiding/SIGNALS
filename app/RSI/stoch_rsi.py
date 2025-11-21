@@ -5,9 +5,9 @@ from app.RSI.utils import split_range
 
 
 def get_signal(markers, interval: int, stoch) -> str | None:
-    """
-    Получает торговый сигнал на основе значения Stochastic RSI (%K)
-    """
+    if not markers.actives.get(interval, False):
+        return None
+
     index = markers.intervals.index(interval)
     k_value = stoch.value[0]
 
@@ -25,27 +25,37 @@ def get_signal(markers, interval: int, stoch) -> str | None:
     return None
 
 
+
 def update_prediction(klines, kline, stoch, markers, max_iter: int = 40) -> None:
-    """
-    Предсказывает цену, при которой %K из Stochastic RSI попадёт в заданный диапазон.
-    Использует markers.predict[index] как target для бинарного поиска.
-    """
+    if not markers.actives.get(kline.interval, False):
+        STOCH_RSI_PREDICT[kline.interval] = None
+        return
+
     index = markers.intervals.index(kline.interval)
     k_value = stoch.value[0]
 
     if k_value < 40:
         side = "buy"
-        target = markers.buy.predict[index]
+        target_percent = markers.buy.predict[index]
     elif k_value > 60:
         side = "sell"
-        target = markers.sell.predict[index]
+        target_percent = markers.sell.predict[index]
     else:
         STOCH_RSI_PREDICT[kline.interval] = None
         return
 
     prediction = klines.predict_stoch_rsi(
         side=side,
-        target_range=target,
+        target_range=target_percent,
         max_iter=max_iter,
     )
-    STOCH_RSI_PREDICT[kline.interval] = prediction or None
+
+    # Проверка: предсказание должно оставаться в пределах target_percent от текущей цены
+    if prediction:
+        current_price = float(klines.history[-1].data[0].close)
+        max_delta = current_price * target_percent / 100
+        if abs(prediction.rate - current_price) > max_delta:
+            prediction = None
+
+    STOCH_RSI_PREDICT[kline.interval] = prediction
+

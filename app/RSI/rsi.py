@@ -8,6 +8,10 @@ def get_signal(markers, interval: int, rsi) -> str | None:
     """
     Определяет сигнал по текущему RSI и сохраняет его
     """
+    if not markers.actives.get(interval, False):
+        # Интервал отключен, игнорируем
+        return None
+
     index = markers.intervals.index(interval)
 
     low, high = split_range(markers.buy.values[index])
@@ -24,12 +28,17 @@ def get_signal(markers, interval: int, rsi) -> str | None:
     return None
 
 
+
 def update_prediction(klines, kline, rsi, markers, max_iter: int = 40) -> None:
     """
     Предсказывает цену, при которой RSI попадёт в заданный диапазон.
     Использует markers.predict[index] как target для бинарного поиска.
     """
+    if not markers.actives.get(kline.interval, False):
+        RSI_PREDICT[kline.interval] = None
+        return
     index = markers.intervals.index(kline.interval)
+
     value = rsi.value
 
     # Определяем сторону и target для бинарного поиска
