@@ -27,7 +27,7 @@ def load_project_secrets(project_slug: str):
 shared_secrets = load_project_secrets("shared-all")
 
 # Загружаем проектные секреты
-project_secrets = load_project_secrets("combinator")
+project_secrets = load_project_secrets("signals-btc")
 
 # Объединяем: проектные перезаписывают общие при совпадении ключей
 all_secrets = {**shared_secrets, **project_secrets}

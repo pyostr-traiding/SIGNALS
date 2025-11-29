@@ -54,4 +54,3 @@ def trend_callback(klines: Klines, kline: KlineSchema):
         return
 
     rev = klines.get_current_trend(window=30)
-    pprint(rev.model_dump())

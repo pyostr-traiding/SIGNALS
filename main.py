@@ -58,8 +58,8 @@ def handle_message(message: dict):
         # print(datetime.now())
         klines_obj.update(kline)
         trend_callback(klines=klines_obj, kline=kline)
-        # rsi_callback(klines=klines_obj, kline=kline)
-        # macd_callback(klines=klines_obj, kline=kline)
+        rsi_callback(klines=klines_obj, kline=kline)
+        macd_callback(klines=klines_obj, kline=kline)
         # print(datetime.now())
         # print('----')
     # except Exception as e:
