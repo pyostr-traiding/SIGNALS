@@ -5,16 +5,26 @@ description = ""
 authors = [
     {name = "www",email = "pyostr@gmail.com"}
 ]
+
 readme = "README.md"
+
 requires-python = ">=3.12"
+
 dependencies = [
     "python-dotenv (>=1.2.1,<2.0.0)",
     "redis (>=7.0.1,<8.0.0)",
     "cachetools (>=6.2.1,<7.0.0)",
-    "klines @ git+https://github.com/pyostr-traiding/klines.git",
+    "matplotlib (>=3.10.7,<4.0.0)",
+    "hmmlearn (>=0.3.3,<0.4.0)",
+    "klines @ git+https://github.com/pyostr-traiding/klines.git@9b1e8b4",
+    "infisicalsdk (>=1.0.13,<2.0.0)",
 ]
 
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+package-mode = false
