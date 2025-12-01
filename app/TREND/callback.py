@@ -40,13 +40,15 @@
   "interval": 1                             // Таймфрейм свечи (в минутах, секундах или как задано)
 }
 """
-
+import json
 import os
 from pprint import pprint
 
 from klines.kline import Klines
 from klines.schema.kline import KlineSchema
 
+from conf.redis_conf import server_redis
+from conf.settings import settings
 
 
 def trend_callback(klines: Klines, kline: KlineSchema):
@@ -54,3 +56,16 @@ def trend_callback(klines: Klines, kline: KlineSchema):
         return
 
     rev = klines.get_current_trend(window=30)
+
+    stoch_payload = {
+        "kline_ms": kline.ts,
+        "symbol": kline.symbol,
+        "type": "TREND",
+        "ex": settings.EXCHANGE,
+        "data": rev.model_dump(),
+    }
+    message = json.dumps(stoch_payload).encode("utf-8")
+    server_redis.publish(
+        channel=f"signals:{settings.SYMBOL}:TREND",
+        message=message,
+    )
